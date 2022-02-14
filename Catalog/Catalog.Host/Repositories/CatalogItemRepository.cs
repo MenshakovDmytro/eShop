@@ -35,7 +35,7 @@ public class CatalogItemRepository : ICatalogItemRepository
         return new PaginatedItems<CatalogItem>() { TotalCount = totalItems, Data = itemsOnPage };
     }
 
-    public async Task<int?> Add(string name, string description, decimal price, int availableStock, int catalogBrandId, int catalogTypeId, string pictureFileName)
+    public async Task<int?> AddAsync(string name, string description, decimal price, int availableStock, int catalogBrandId, int catalogTypeId, string pictureFileName)
     {
         var item = await _dbContext.AddAsync(new CatalogItem
         {
@@ -44,11 +44,83 @@ public class CatalogItemRepository : ICatalogItemRepository
             Description = description,
             Name = name,
             PictureFileName = pictureFileName,
-            Price = price
+            Price = price,
+            AvailableStock = availableStock
         });
 
         await _dbContext.SaveChangesAsync();
 
         return item.Entity.Id;
+    }
+
+    public async Task<CatalogItem?> GetByIdAsync(int id)
+    {
+        var item = await _dbContext.CatalogItems
+            .Include(i => i.CatalogBrand)
+            .Include(i => i.CatalogType)
+            .Where(w => w.Id == id).FirstOrDefaultAsync();
+
+        return item;
+    }
+
+    public async Task<ItemsList<CatalogItem>> GetByBrandAsync(string brand)
+    {
+        var items = await _dbContext.CatalogItems
+            .Include(i => i.CatalogBrand)
+            .Include(i => i.CatalogType)
+            .Where(w => w.CatalogBrand.Brand.Equals(brand))
+            .ToListAsync();
+
+        return new ItemsList<CatalogItem>() { TotalCount = items.Count, Data = items };
+    }
+
+    public async Task<ItemsList<CatalogItem>> GetByTypeAsync(string type)
+    {
+        var items = await _dbContext.CatalogItems
+            .Include(i => i.CatalogBrand)
+            .Include(i => i.CatalogType)
+            .Where(w => w.CatalogType.Type.Equals(type))
+            .ToListAsync();
+
+        return new ItemsList<CatalogItem>() { TotalCount = items.Count, Data = items };
+    }
+
+    public async Task<bool> RemoveAsync(string name)
+    {
+        var item = await _dbContext.CatalogItems
+            .Where(w => w.Name.Equals(name))
+            .FirstOrDefaultAsync();
+
+        if (item is not null)
+        {
+            _dbContext.Remove(item);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        return false;
+    }
+
+    public async Task<bool> UpdateAsync(string oldName, string newName, string description, decimal price, int availableStock, int catalogBrandId, int catalogTypeId, string pictureFileName)
+    {
+        var item = await _dbContext.CatalogItems
+            .Where(w => w.Name.Equals(oldName))
+            .FirstOrDefaultAsync();
+
+        if (item is not null)
+        {
+            item.CatalogBrandId = catalogBrandId;
+            item.CatalogTypeId = catalogTypeId;
+            item.Description = description;
+            item.Name = newName;
+            item.PictureFileName = pictureFileName;
+            item.Price = price;
+            item.AvailableStock = availableStock;
+
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        return false;
     }
 }
