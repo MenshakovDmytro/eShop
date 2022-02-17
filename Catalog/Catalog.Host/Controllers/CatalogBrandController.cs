@@ -31,18 +31,18 @@ public class CatalogBrandController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(RemoveBrandResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(RemoveBrandResponse<int?>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Remove(RemoveBrandRequest request)
     {
-        var result = await _catalogBrandService.RemoveAsync(request.Name);
-        return Ok(new RemoveBrandResponse() { IsRemoved = result });
+        var result = await _catalogBrandService.RemoveAsync(request.Id);
+        return Ok(new RemoveBrandResponse<int?>() { Id = result });
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(UpdateBrandResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(UpdateBrandResponse<int?>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Update(UpdateBrandRequest request)
     {
-        var result = await _catalogBrandService.UpdateAsync(request.OldName, request.NewName);
-        return Ok(new UpdateBrandResponse() { IsUpdated = result });
+        var result = await _catalogBrandService.UpdateAsync(request.Id, request.Name);
+        return Ok(new UpdateBrandResponse<int?>() { Id = result });
     }
 }

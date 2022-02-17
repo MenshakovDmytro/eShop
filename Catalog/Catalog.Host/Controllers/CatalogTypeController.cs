@@ -31,18 +31,18 @@ public class CatalogTypeController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(RemoveTypeResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(RemoveTypeResponse<int?>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Remove(RemoveTypeRequest request)
     {
-        var result = await _catalogTypeService.RemoveAsync(request.Name);
-        return Ok(new RemoveTypeResponse() { IsRemoved = result });
+        var result = await _catalogTypeService.RemoveAsync(request.Id);
+        return Ok(new RemoveTypeResponse<int?>() { Id = result });
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(UpdateTypeResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(UpdateTypeResponse<int?>), (int)HttpStatusCode.OK)]
     public async Task<IActionResult> Update(UpdateTypeRequest request)
     {
-        var result = await _catalogTypeService.UpdateAsync(request.OldName, request.NewName);
-        return Ok(new UpdateTypeResponse() { IsUpdated = result });
+        var result = await _catalogTypeService.UpdateAsync(request.Id, request.Name);
+        return Ok(new UpdateTypeResponse<int?>() { Id = result });
     }
 }
