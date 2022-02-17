@@ -39,37 +39,30 @@ namespace Catalog.Host.Repositories
             return new ItemsList<CatalogBrand>() { TotalCount = brands.Count, Data = brands };
         }
 
-        public async Task<bool> RemoveAsync(string name)
+        public async Task<int?> RemoveAsync(int id)
         {
             var brand = await _dbContext.CatalogBrands
-            .Where(w => w.Brand.Equals(name))
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (brand is not null)
-            {
-                _dbContext.Remove(brand);
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-
-            return false;
+            var result = _dbContext.Remove(brand!);
+            await _dbContext.SaveChangesAsync();
+            return result.Entity.Id;
         }
 
-        public async Task<bool> UpdateAsync(string oldName, string newName)
+        public async Task<int?> UpdateAsync(int id, string name)
         {
             var brand = await _dbContext.CatalogBrands
-            .Where(w => w.Brand.Equals(oldName))
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(f => f.Id == id);
 
             if (brand is not null)
             {
-                brand.Brand = newName;
+                brand.Brand = name;
 
+                brand = _dbContext.Update(brand).Entity;
                 await _dbContext.SaveChangesAsync();
-                return true;
             }
 
-            return false;
+            return brand!.Id;
         }
     }
 }

@@ -39,37 +39,30 @@ namespace Catalog.Host.Repositories
             return new ItemsList<CatalogType>() { TotalCount = types.Count, Data = types };
         }
 
-        public async Task<bool> RemoveAsync(string name)
+        public async Task<int?> RemoveAsync(int id)
         {
             var type = await _dbContext.CatalogTypes
-            .Where(w => w.Type.Equals(name))
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (type is not null)
-            {
-                _dbContext.Remove(type);
-                await _dbContext.SaveChangesAsync();
-                return true;
-            }
-
-            return false;
+            var result = _dbContext.Remove(type!);
+            await _dbContext.SaveChangesAsync();
+            return result.Entity.Id;
         }
 
-        public async Task<bool> UpdateAsync(string oldName, string newName)
+        public async Task<int?> UpdateAsync(int id, string name)
         {
             var type = await _dbContext.CatalogTypes
-            .Where(w => w.Type.Equals(oldName))
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(f => f.Id == id);
 
             if (type is not null)
             {
-                type.Type = newName;
+                type.Type = name;
 
+                type = _dbContext.Update(type).Entity;
                 await _dbContext.SaveChangesAsync();
-                return true;
             }
 
-            return false;
+            return type!.Id;
         }
     }
 }

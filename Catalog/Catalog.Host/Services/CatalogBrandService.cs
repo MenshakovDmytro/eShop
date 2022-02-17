@@ -41,14 +41,14 @@ namespace Catalog.Host.Services
             });
         }
 
-        public Task<bool> RemoveAsync(string name)
+        public Task<int?> RemoveAsync(int id)
         {
-            return ExecuteSafeAsync(() => _catalogBrandRepository.RemoveAsync(name));
+            return ExecuteSafeAsync(() => _catalogBrandRepository.RemoveAsync(id));
         }
 
-        public Task<bool> UpdateAsync(string oldName, string newName)
+        public Task<int?> UpdateAsync(int id, string name)
         {
-            return ExecuteSafeAsync(() => _catalogBrandRepository.UpdateAsync(oldName, newName));
+            return ExecuteSafeAsync(() => _catalogBrandRepository.UpdateAsync(id, name));
         }
     }
 }

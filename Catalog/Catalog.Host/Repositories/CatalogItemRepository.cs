@@ -58,7 +58,7 @@ public class CatalogItemRepository : ICatalogItemRepository
         var item = await _dbContext.CatalogItems
             .Include(i => i.CatalogBrand)
             .Include(i => i.CatalogType)
-            .Where(w => w.Id == id).FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(f => f.Id == id);
 
         return item;
     }
@@ -85,42 +85,34 @@ public class CatalogItemRepository : ICatalogItemRepository
         return new ItemsList<CatalogItem>() { TotalCount = items.Count, Data = items };
     }
 
-    public async Task<bool> RemoveAsync(string name)
+    public async Task<int?> RemoveAsync(int id)
     {
         var item = await _dbContext.CatalogItems
-            .Where(w => w.Name.Equals(name))
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(f => f.Id == id);
 
-        if (item is not null)
-        {
-            _dbContext.Remove(item);
-            await _dbContext.SaveChangesAsync();
-            return true;
-        }
-
-        return false;
+        var result = _dbContext.Remove(item!);
+        await _dbContext.SaveChangesAsync();
+        return result.Entity.Id;
     }
 
-    public async Task<bool> UpdateAsync(string oldName, string newName, string description, decimal price, int availableStock, int catalogBrandId, int catalogTypeId, string pictureFileName)
+    public async Task<int?> UpdateAsync(int id, string name, string description, decimal price, int availableStock, int catalogBrandId, int catalogTypeId, string pictureFileName)
     {
         var item = await _dbContext.CatalogItems
-            .Where(w => w.Name.Equals(oldName))
-            .FirstOrDefaultAsync();
-
+            .FirstOrDefaultAsync(f => f.Id == id);
         if (item is not null)
         {
             item.CatalogBrandId = catalogBrandId;
             item.CatalogTypeId = catalogTypeId;
             item.Description = description;
-            item.Name = newName;
+            item.Name = name;
             item.PictureFileName = pictureFileName;
             item.Price = price;
             item.AvailableStock = availableStock;
 
+            item = _dbContext.Update(item).Entity;
             await _dbContext.SaveChangesAsync();
-            return true;
         }
 
-        return false;
+        return item!.Id;
     }
 }

@@ -63,13 +63,13 @@ public class CatalogItemService : BaseDataService<ApplicationDbContext>, ICatalo
         });
     }
 
-    public Task<bool> RemoveAsync(string name)
+    public Task<int?> RemoveAsync(int id)
     {
-        return ExecuteSafeAsync(() => _catalogItemRepository.RemoveAsync(name));
+        return ExecuteSafeAsync(() => _catalogItemRepository.RemoveAsync(id));
     }
 
-    public Task<bool> UpdateAsync(string oldName, string newName, string description, decimal price, int availableStock, int catalogBrandId, int catalogTypeId, string pictureFileName)
+    public Task<int?> UpdateAsync(int id, string name, string description, decimal price, int availableStock, int catalogBrandId, int catalogTypeId, string pictureFileName)
     {
-        return ExecuteSafeAsync(() => _catalogItemRepository.UpdateAsync(oldName, newName, description, price, availableStock, catalogBrandId, catalogTypeId, pictureFileName));
+        return ExecuteSafeAsync(() => _catalogItemRepository.UpdateAsync(id, name, description, price, availableStock, catalogBrandId, catalogTypeId, pictureFileName));
     }
 }
