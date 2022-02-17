@@ -1,7 +1,7 @@
 ﻿namespace Catalog.Host.Models.Response
 {
-    public class RemoveBrandResponse
+    public class RemoveBrandResponse<T>
     {
-        public bool IsRemoved { get; set; }
+        public T Id { get; set; } = default(T) !;
     }
 }

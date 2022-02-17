@@ -1,7 +1,7 @@
 ﻿namespace Catalog.Host.Models.Response
 {
-    public class UpdateTypeResponse
+    public class UpdateTypeResponse<T>
     {
-        public bool IsUpdated { get; set; }
+        public T Id { get; set; } = default(T) !;
     }
 }
