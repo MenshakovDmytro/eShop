@@ -7,7 +7,7 @@ namespace Catalog.Host.Services.Interfaces
     {
         Task<int?> AddAsync(string name);
         Task<ItemsListResponse<CatalogTypeDto>> GetTypesAsync();
-        Task<bool> RemoveAsync(string name);
-        Task<bool> UpdateAsync(string oldName, string newName);
+        Task<int?> RemoveAsync(int id);
+        Task<int?> UpdateAsync(int id, string name);
     }
 }
