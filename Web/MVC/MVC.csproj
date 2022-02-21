@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
+		<CodeAnalysisRuleSet>../../settings.ruleset</CodeAnalysisRuleSet>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -10,6 +11,10 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.161" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
