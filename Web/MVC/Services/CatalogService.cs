@@ -1,5 +1,6 @@
 ﻿using MVC.Dtos;
 using MVC.Models.Enums;
+using MVC.Models.Requests;
 using MVC.Services.Interfaces;
 using MVC.ViewModels;
 
@@ -26,14 +27,15 @@ public class CatalogService : ICatalogService
         {
             filters.Add(CatalogTypeFilter.Brand, brand.Value);
         }
-        
+
         if (type.HasValue)
         {
             filters.Add(CatalogTypeFilter.Type, type.Value);
         }
-        
-        var result = await _httpClient.SendAsync<Catalog, PaginatedItemsRequest<CatalogTypeFilter>>($"{_settings.Value.CatalogUrl}/items",
-           HttpMethod.Post, 
+
+        var result = await _httpClient.SendAsync<Catalog, PaginatedItemsRequest<CatalogTypeFilter>>(
+           $"{_settings.Value.CatalogUrl}/items",
+           HttpMethod.Post,
            new PaginatedItemsRequest<CatalogTypeFilter>()
             {
                 PageIndex = page,
@@ -46,41 +48,40 @@ public class CatalogService : ICatalogService
 
     public async Task<IEnumerable<SelectListItem>> GetBrands()
     {
-        await Task.Delay(300);
-        var list = new List<SelectListItem>
+        var result = await _httpClient.SendAsync<ItemsListResponse<CatalogBrand>, object?>(
+            $"{_settings.Value.CatalogUrl}/GetBrands",
+            HttpMethod.Post,
+            null);
+
+        var list = new List<SelectListItem>();
+        foreach (var item in result.Data)
         {
-            new SelectListItem()
+            list.Add(new SelectListItem()
             {
-                Value = "0",
-                Text = "brand 1"
-            },
-            new SelectListItem()
-            {
-                Value = "1",
-                Text = "brand 2"
-            }
-        };
+                Value = item.Id.ToString(),
+                Text = item.Brand
+            });
+        }
 
         return list;
     }
 
     public async Task<IEnumerable<SelectListItem>> GetTypes()
     {
-        await Task.Delay(300);
-        var list = new List<SelectListItem>
+        var result = await _httpClient.SendAsync<ItemsListResponse<CatalogType>, object?>(
+            $"{_settings.Value.CatalogUrl}/GetTypes",
+            HttpMethod.Post,
+            null);
+
+        var list = new List<SelectListItem>();
+        foreach (var item in result.Data)
         {
-            new SelectListItem()
+            list.Add(new SelectListItem()
             {
-                Value = "0",
-                Text = "type 1"
-            },
-            
-            new SelectListItem()
-            {
-                Value = "1",
-                Text = "type 2"
-            }
-        };
+                Value = item.Id.ToString(),
+                Text = item.Type
+            });
+        }
 
         return list;
     }
